@@ -1,7 +1,7 @@
 import optparse
 import os
 import tensorflow as tf
-import modeling
+import Bert.open_source.modeling as modeling
 import optimization
 import time
 from _data import Dataset
@@ -22,7 +22,7 @@ class Trainer:
     num_train_step = int(self._data_train.size / batch_size * epochs)
     num_warmup_step = int(num_train_step * warmup_proportion)
 
-    self._model = Model(bert_config_file, is_training, num_labels)
+    self._model = Model(bert_config_file, max_seq_length, init_ckpt, is_training, num_labels)
 
     self._train_op, self._global_step = optimization.create_optimizer(
       self._model.loss, learning_rate, num_train_step, num_warmup_step, False, virtual_batch_size_ratio)
@@ -31,8 +31,7 @@ class Trainer:
     self.epochs = epochs
     self.evaluate_every = evaluate_every
     self.output_dir = output_dir
-    self.init_ckpt = init_ckpt
-    self._predictor = Predictor(bert_config_file, num_labels)
+    self._predictor = Predictor(bert_config_file, max_seq_length, num_labels)
     
   def evaluate(self, step):
     print(f"saving model[{step}] ...")
@@ -44,17 +43,15 @@ class Trainer:
 
   def train(self):
     self._sess = tf.Session()
-    if self.init_ckpt:
-      tvars = tf.trainable_variables()
-      (assignment_map, initialized_variable_names
-       ) = modeling.get_assignment_map_from_checkpoint(tvars, self.init_ckpt)
-      tf.train.init_from_checkpoint(self.init_ckpt, assignment_map)
-      print('*** loading variablrs ***')
-      for var in tvars:
-        if var.name in initialized_variable_names:
-          print(f"name = {var.name}, shape = {var.shape}, *INIT_FROM_CKPT*")
-        else:
-          print(f"name = {var.name}, shape = {var.shape}")
+
+    tvars = tf.trainable_variables()
+    initialized_variable_names = self._model.model.initialized_variable_names
+    print('*** loading variablrs ***')
+    for var in tvars:
+      if var.name in initialized_variable_names:
+        print(f"name = {var.name}, shape = {var.shape}, *INIT_FROM_CKPT*")
+      else:
+        print(f"name = {var.name}, shape = {var.shape}")
 
     self._sess.run(tf.global_variables_initializer())
     self._saver = tf.train.Saver(tf.global_variables(), max_to_keep=1000)
@@ -71,9 +68,9 @@ class Trainer:
           self._train_op
         ],
         feed_dict={
-          self._model.input_ids_p: input_ids_b,
-          self._model.input_mask_p: input_mask_b,
-          self._model.segment_ids_p: segment_ids_b,
+          self._model.model.input_ids_p: input_ids_b,
+          self._model.model.input_mask_p: input_mask_b,
+          self._model.model.segment_ids_p: segment_ids_b,
           self._model.labels: label_ids_b
         }
       )
@@ -108,7 +105,7 @@ def main():
     epochs = 30,
     warmup_proportion = 0.1,
     virtual_batch_size_ratio = 1,
-    evaluate_every = 2000,
+    evaluate_every = 200,
     init_ckpt = '../bert_data/uncased_L-12_H-768_A-12/bert_model.ckpt'
   )
   T.train()

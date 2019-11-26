@@ -1,14 +1,9 @@
-import os
-current_path = os.path.abspath(__file__)
-father_path = os.path.dirname(os.path.dirname(current_path))
-import sys
-sys.path.append(father_path)
 import tensorflow as tf
-import modeling
+import open_source.modeling as modeling
 
 class BertModel:
   def __init__(self,
-               bert_config,
+               bert_config_file,
                max_seq_length,
                bert_init_ckpt=None,
                is_training=True):
@@ -31,7 +26,7 @@ class BertModel:
     )
     if bert_init_ckpt:
       tvars = tf.trainable_variables()
-      (assignment_map, initialized_variable_names
+      (assignment_map, self.initialized_variable_names
        ) = modeling.get_assignment_map_from_checkpoint(tvars, bert_init_ckpt)
       tf.train.init_from_checkpoint(bert_init_ckpt, assignment_map)
 

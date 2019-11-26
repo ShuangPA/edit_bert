@@ -1,9 +1,4 @@
-import os
-current_path = os.path.abspath(__file__)
-father_path = os.path.dirname(os.path.dirname(current_path))
-import sys
-sys.path.append(father_path)
-import tokenization
+import open_source.tokenization as tokenization
 
 class BertTokenizer:
   def __init__(self, vocab_file, do_lower_case=True):

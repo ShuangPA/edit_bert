@@ -7,7 +7,7 @@ from pa_nlp.tf.estimator.dataset import DataReaderBase
 from pa_nlp.tf.estimator.param import ParamBase
 import tensorflow as tf
 import collections
-import tokenization
+import Bert.open_source.tokenization as tokenization
 
 tf.logging.set_verbosity(tf.logging.INFO)
 

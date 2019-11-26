@@ -9,10 +9,10 @@ from _model import Model
 import numpy as np
 
 class Predictor:
-  def __init__(self, bert_config_file, num_labels):
+  def __init__(self, bert_config_file, max_seq_length, num_labels):
     self._graph = tf.Graph()
     with self._graph.as_default():
-      self._model = Model(bert_config_file, False, num_labels)
+      self._model = Model(bert_config_file, max_seq_length, None, False, num_labels)
     self._sess = tf.Session(graph=self._graph)
 
   def load_model(self, model_path):
@@ -33,9 +33,9 @@ class Predictor:
           self._model.probabilities
         ],
         feed_dict={
-          self._model.input_ids_p: input_ids_b,
-          self._model.input_mask_p: input_mask_b,
-          self._model.segment_ids_p: segment_ids_b,
+          self._model.model.input_ids_p: input_ids_b,
+          self._model.model.input_mask_p: input_mask_b,
+          self._model.model.segment_ids_p: segment_ids_b,
         }
       )
       pred_label = [np.argmax(np.array(item)) for item in all_prob[0]]
@@ -63,11 +63,12 @@ def main():
 
   P = Predictor(
     bert_config_file='../bert_data/uncased_L-12_H-768_A-12/bert_config.json',
+    max_seq_length=128,
     num_labels=2,
   )
   os.system('mkdir ./temp')
   dev_data = Dataset(
-    file_name='../STS/data/std_quora_data/dev1.pydict',
+    file_name='../STS/data/std_quora_data/s.train.pydict',
     num_class=2,
     vocab_file='../bert_data/uncased_L-12_H-768_A-12/vocab.txt',
     do_lower_case=True,
@@ -76,7 +77,7 @@ def main():
     max_seq_length=128
   )
 
-  P.load_model('./out01/model-150000')
+  P.load_model('./out_temp/model-200')
   P.predict_dataset(dev_data)
 
 if __name__ == '__main__':

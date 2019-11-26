@@ -1,9 +1,4 @@
-import os
-current_path = os.path.abspath(__file__)
-father_path = os.path.dirname(os.path.dirname(current_path))
-import sys
-sys.path.append(father_path)
-import tokenization
+import open_source.tokenization as tokenization
 
 class Tokenizer:
   def __init__(self, vocab_file, do_lower_case=True):
@@ -12,7 +7,7 @@ class Tokenizer:
     self.tokenizer = tokenization.FullTokenizer(
       self.vocab_file, self.do_lower_case)
 
-  def sen_to_tokens(self, sentence):
+  def sentence_to_tokens(self, sentence):
     '''
     :param sentence: input English sentence
     :return: a list of tokens
@@ -30,7 +25,7 @@ class Tokenizer:
 
 def main():
   T = Tokenizer(vocab_file='../../bert_data/uncased_L-12_H-768_A-12/vocab.txt')
-  token = T.sen_to_tokens('i am happy today 好的 好de')
+  token = T.sentence_to_tokens('i am happy today 好的 好de')
   ids = T.tokens_to_ids(token)
   print(token)
   print(ids)

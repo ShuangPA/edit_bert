@@ -1,21 +1,28 @@
+import sys
+sys.path.append('./Bert/')
 import tensorflow as tf
-import modeling
+import Bert.open_source.modeling as modeling
+from Bert.bert_model import BertModel
+
 
 class Model:
-  def __init__(self, bert_config_file, is_training, num_labels):
-    self.input_ids_p = tf.placeholder(tf.int32, [None, 128], name="input_ids")
-    self.input_mask_p = tf.placeholder(tf.int32, [None, 128], name="input_mask")
-    self.segment_ids_p = tf.placeholder(tf.int32, [None, 128],name="segment_ids")
+  def __init__(self, bert_config_file, max_seq_length, bert_init_ckpt, is_training, num_labels):
+    # self.input_ids_p = tf.placeholder(tf.int32, [None, 128], name="input_ids")
+    # self.input_mask_p = tf.placeholder(tf.int32, [None, 128], name="input_mask")
+    # self.segment_ids_p = tf.placeholder(tf.int32, [None, 128],name="segment_ids")
     self.labels = tf.placeholder(tf.int32, [None], name='label_ids')
-    bert_config = modeling.BertConfig.from_json_file(bert_config_file)
-    self.model = modeling.BertModel(
-      config=bert_config,
-      is_training=is_training,
-      input_ids=self.input_ids_p,
-      input_mask=self.input_mask_p,
-      token_type_ids=self.segment_ids_p
-    )
-    output_layer = self.model.get_pooled_output()
+    # bert_config = modeling.BertConfig.from_json_file(bert_config_file)
+    # self.model = modeling.BertModel(
+    #   config=bert_config,
+    #   is_training=is_training,
+    #   input_ids=self.input_ids_p,
+    #   input_mask=self.input_mask_p,
+    #   token_type_ids=self.segment_ids_p
+    # )
+
+    self.model = BertModel(bert_config_file, max_seq_length, bert_init_ckpt, is_training)
+    sequence_output = self.model.get_sequence_output_of_a_layer(-1)
+    output_layer = tf.squeeze(sequence_output[:, 0:1, :], axis=1)
     hidden_size = output_layer.shape[-1].value
     output_weights = tf.get_variable(
       "output_weights", [num_labels, hidden_size],
