@@ -95,17 +95,17 @@ def main():
     bert_config_file = '../bert_data/uncased_L-12_H-768_A-12/bert_config.json',
     is_training = True,
     num_labels = 2,
-    train_file = '../STS/data/std_quora_data/s.train.pydict',
-    dev_file = '../STS/data/std_quora_data/s.train.pydict',
+    train_file = '../STS/data/std_quora_data/train.pydict',
+    dev_file = '../STS/data/std_quora_data/dev0.pydict',
     vocab_file = '../bert_data/uncased_L-12_H-768_A-12/vocab.txt',
-    output_dir = './out_temp',
+    output_dir = '../TEMP/out_temp',
     max_seq_length = 128,
     learning_rate = 5e-5,
     batch_size = 64,
     epochs = 30,
     warmup_proportion = 0.1,
     virtual_batch_size_ratio = 1,
-    evaluate_every = 200,
+    evaluate_every = 1000,
     init_ckpt = '../bert_data/uncased_L-12_H-768_A-12/bert_model.ckpt'
   )
   T.train()
