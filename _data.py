@@ -1,10 +1,10 @@
 import os
 import sys
 sys.path.append('../insight_nlp')
-from pa_nlp.tf import *
-from pa_nlp.tf import nlp_tf
-from pa_nlp.tf.estimator.dataset import DataReaderBase
-from pa_nlp.tf.estimator.param import ParamBase
+from pa_nlp.tf_1x import *
+from pa_nlp.tf_1x import nlp_tf
+from pa_nlp.tf_1x.estimator.dataset import DataReaderBase
+from pa_nlp.tf_1x.estimator.param import ParamBase
 import tensorflow as tf
 import collections
 import Bert.open_source.tokenization as tokenization

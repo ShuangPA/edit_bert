@@ -61,7 +61,7 @@ def main():
   parser.add_option("--temp_dir", default="./temp")
   parser.add_option("--max_seq_length", default=128)
   parser.add_option("--model_ckpt", default="./out_temp/model-200")
-d
+
   (options, args) = parser.parse_args()
   print(options)
   os.environ["CUDA_VISIBLE_DEVICES"] = options.gpu
