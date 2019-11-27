@@ -83,30 +83,43 @@ class Trainer:
 
 def main():
   parser = optparse.OptionParser(usage="cmd [optons] ..]")
-  # parser.add_option("-q", "--quiet", action="store_true", dest="verbose",
   parser.add_option("--gpu", default="-1", help="default=-1")
+  parser.add_option("--bert_config_file", default="../bert_data/uncased_L-12_H-768_A-12/bert_config.json")
+  parser.add_option("--is_training", default=True)
+  parser.add_option("--num_labels", default=2)
+  parser.add_option("--train_file", default="../STS/data/std_quora_data/train.pydict")
+  parser.add_option("--dev_file", default="../STS/data/std_quora_data/dev0.pydict")
+  parser.add_option("--vocab_file", default="../bert_data/uncased_L-12_H-768_A-12/vocab.txt")
+  parser.add_option("--output_dir", default="../TEMP/out_temp")
+  parser.add_option("--max_seq_length", default=128)
+  parser.add_option("--learning_rate", default=5e-5)
+  parser.add_option("--batch_size", default=64)
+  parser.add_option("--epochs", default=30)
+  parser.add_option("--warmup_proportion", default=0.1)
+  parser.add_option("--virtual_batch_size_ratio", default=1)
+  parser.add_option("--evaluate_every", default=1000)
+  parser.add_option("--init_ckpt", default="../bert_data/uncased_L-12_H-768_A-12/bert_model.ckpt")
 
-  # default=False, help="")
   (options, args) = parser.parse_args()
   print(options)
   os.environ["CUDA_VISIBLE_DEVICES"] = options.gpu
 
   T = Trainer(
-    bert_config_file = '../bert_data/uncased_L-12_H-768_A-12/bert_config.json',
-    is_training = True,
-    num_labels = 2,
-    train_file = '../STS/data/std_quora_data/train.pydict',
-    dev_file = '../STS/data/std_quora_data/dev0.pydict',
-    vocab_file = '../bert_data/uncased_L-12_H-768_A-12/vocab.txt',
-    output_dir = '../TEMP/out_temp',
-    max_seq_length = 128,
-    learning_rate = 5e-5,
-    batch_size = 64,
-    epochs = 30,
-    warmup_proportion = 0.1,
-    virtual_batch_size_ratio = 1,
-    evaluate_every = 1000,
-    init_ckpt = '../bert_data/uncased_L-12_H-768_A-12/bert_model.ckpt'
+    bert_config_file = options.bert_config_file,
+    is_training = options.is_training,
+    num_labels = options.num_labels,
+    train_file = options.train_file,
+    dev_file = options.dev_file,
+    vocab_file = options.vocab_file,
+    output_dir = options.output_dir,
+    max_seq_length = options.max_seq_length,
+    learning_rate = options.learning_rate,
+    batch_size = options.batch_size,
+    epochs = options.epochs,
+    warmup_proportion = options.warmup_proportion,
+    virtual_batch_size_ratio = options.virtual_batch_size_ratio,
+    evaluate_every = options.evaluate_every,
+    init_ckpt = options.init_ckpt
   )
   T.train()
 

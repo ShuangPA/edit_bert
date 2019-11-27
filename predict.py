@@ -53,31 +53,36 @@ class Predictor:
 
 def main():
   parser = optparse.OptionParser(usage="cmd [optons] ..]")
-  # parser.add_option("-q", "--quiet", action="store_true", dest="verbose",
   parser.add_option("--gpu", default="-1", help="default=-1")
-
-  # default=False, help="")
+  parser.add_option("--bert_config_file", default="../bert_data/uncased_L-12_H-768_A-12/bert_config.json")
+  parser.add_option("--num_labels", default=2)
+  parser.add_option("--dev_file", default="../STS/data/std_quora_data/dev0.pydict")
+  parser.add_option("--vocab_file", default="../bert_data/uncased_L-12_H-768_A-12/vocab.txt")
+  parser.add_option("--temp_dir", default="./temp")
+  parser.add_option("--max_seq_length", default=128)
+  parser.add_option("--model_ckpt", default="./out_temp/model-200")
+d
   (options, args) = parser.parse_args()
   print(options)
   os.environ["CUDA_VISIBLE_DEVICES"] = options.gpu
 
   P = Predictor(
-    bert_config_file='../bert_data/uncased_L-12_H-768_A-12/bert_config.json',
-    max_seq_length=128,
-    num_labels=2,
+    bert_config_file=options.bert_config_file,
+    max_seq_length=options.max_seq_length,
+    num_labels=options.num_labels,
   )
-  os.system('mkdir ./temp')
+  os.system(f'mkdir {options.temp_dir}')
   dev_data = Dataset(
-    file_name='../STS/data/std_quora_data/s.train.pydict',
-    num_class=2,
-    vocab_file='../bert_data/uncased_L-12_H-768_A-12/vocab.txt',
+    file_name=options.dev_file,
+    num_class=options.num_labels,
+    vocab_file=options.vocab_file,
     do_lower_case=True,
-    tf_record_dir='./temp',
+    tf_record_dir=options.temp_dir,
     if_train=False,
-    max_seq_length=128
+    max_seq_length=options.max_seq_length
   )
 
-  P.load_model('./out_temp/model-200')
+  P.load_model(options.model_ckpt)
   P.predict_dataset(dev_data)
 
 if __name__ == '__main__':
